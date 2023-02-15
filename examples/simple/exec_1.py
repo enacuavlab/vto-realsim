@@ -3,6 +3,11 @@
 import threading,queue,time,argparse
 import numpy as np
 
+import sys
+sys.path.append("/home/pprz/Projects/vto-prod/vto-realsim/natnet-utilities")
+sys.path.append("/home/pprz/Projects/vto-prod/vto-realsim/tellos-utilities")
+sys.path.append("/home/pprz/Projects/vto-prod/vto-realsim/gtkopengl-utilities")
+
 from natnet4 import Rigidbody,Thread_natnet
 from mission import Thread_mission
 from simulation import Thread_commandSim, Simbody
