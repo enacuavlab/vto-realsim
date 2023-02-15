@@ -1,2 +1,2 @@
 # vto-realsim
-mixing reality and simulation
+Mixing simulation and reality
