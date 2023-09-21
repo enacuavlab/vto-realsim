@@ -22,6 +22,7 @@ from drawingGL import DrawingGL
 
 # full simulation
 ./exec_1.py --ts 888
+./exec_1.py --ts 888 --as 45
 ./exec_1.py --ts 888 --as 45[-1.1,-2.2,3.3]
 
 # hybrid real and simulation
