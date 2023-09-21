@@ -97,7 +97,7 @@ def argsforSim(param):
       pos=np.fromstring((val[1][:-1]), dtype=float, sep=',')
       droneSim[int(val[0])]=pos
     else:
-      droneSim[int(elt)]=np.zeros([1, 3], dtype = float)
+      droneSim[int(elt)]=np.zeros(3)
 
 #------------------------------------------------------------------------------
 if __name__=="__main__":
