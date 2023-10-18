@@ -9,10 +9,13 @@ class Vehicle():
   def __init__(self,ID):
 
     self.ID = ID
-    self.source_strength = 2.0       # Tello repelance
+#    self.source_strength = 1.2       # Tello repelance
+#    self.source_strength = 1.4       # Tello repelance
+    self.source_strength = 1.6       # Tello repelance
+#    self.source_strength = 2.5       # Tello repelance
 #    self.source_strength = 0.95       # Tello repelance
-#    self.sink_strength = 5.0         # attraction force from goal
-    self.sink_strength = 0.95         # attraction force from goal
+    self.sink_strength = 5.0         # attraction force from goal
+#    self.sink_strength = 0.95         # attraction force from goal
     self.position  = np.zeros(3)
     self.goal      = np.zeros(3)
     self.V_inf     = np.zeros(3) # Freestream velocity. AoA is measured from horizontal axis, cw (+)tive

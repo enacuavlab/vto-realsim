@@ -11,7 +11,20 @@ from vehicle import Vehicle
 
 #------------------------------------------------------------------------------
 #telloFreq = 10
+#telloFreq = 5
 telloFreq = 5
+
+H_max = 1.2
+
+#V_coef = 0.8 # to be tuned with repealance
+#V_coef = 1.0
+#V_coef = 1.2
+#V_coef = 1.4
+V_coef = 1.6
+
+#W_coef = 0.6
+#W_coef = 0.4
+W_coef = 0.2
 
 #------------------------------------------------------------------------------
 def compute_flow(vehicles):
@@ -21,21 +34,13 @@ def compute_flow(vehicles):
   V_sink    = np.zeros([len(vehicles),2]) # Velocity induced by sink element
   V_source  = np.zeros([len(vehicles),2]) # Velocity induced by source elements
   V_sum     = np.zeros([len(vehicles),2]) # V_gamma + V_sink + V_source
-  V_normal  = np.zeros([len(vehicles),2]) # Normalized velocity
   V_flow    = np.zeros([len(vehicles),2]) # Normalized velocity inversly proportional to magnitude
-  V_norm    = np.zeros([len(vehicles),1]) # L2 norm of velocity vector
+  V_norm2    = 0
 
-  W_sink    = np.zeros([len(vehicles),1]) # Velocity induced by 3-D sink element
-  W_source  = np.zeros([len(vehicles),1]) # Velocity induced by 3-D source element
+  W_sink     = 0
+  W_source   = 0
+  W_sum      = 0
   W_flow    = np.zeros([len(vehicles),1]) # Vertical velocity component (to be used in 3-D scenarios)
-  W_sum     = np.zeros([len(vehicles),1])
-  W_norm    = np.zeros([len(vehicles),1])
-
-  W_flow    = np.zeros([len(vehicles),1]) # Vertical velocity component (to be used in 3-D scenarios)
-  W_normal  = np.zeros([len(vehicles),1])
-
-  H_max = 0.8
-  H_spd = 0.0
 
   for f,vehicle in enumerate(vehicles):
 
@@ -48,8 +53,8 @@ def compute_flow(vehicles):
 
 
     # Velocity induced by 3-D point sink. Katz&Plotkin Eqn. 3.25
-    W_sink[f,0] = (-vehicle.sink_strength*(vehicle.position[2]-vehicle.goal[2]))/\
-                  (4*np.pi*(((vehicle.position[0]-vehicle.goal[0])**2+(vehicle.position[1]-vehicle.goal[1])**2+(vehicle.position[2]-vehicle.goal[2])**2)**1.5))
+    W_sink = (-vehicle.sink_strength*(vehicle.position[2]-vehicle.goal[2]))/\
+      (4*np.pi*(((vehicle.position[0]-vehicle.goal[0])**2+(vehicle.position[1]-vehicle.goal[1])**2+(vehicle.position[2]-vehicle.goal[2])**2)**1.5))
 
 
     othervehicleslist = vehicles[:f] + vehicles[f+1:]
@@ -60,37 +65,25 @@ def compute_flow(vehicles):
       V_source[f,1] += (othervehicle.source_strength*(vehicle.position[1]-othervehicle.position[1]))/\
                        (2*np.pi*((vehicle.position[0]-othervehicle.position[0])**2+(vehicle.position[1]-othervehicle.position[1])**2))
 
-      W_source[f,0] += (othervehicle.source_strength*(vehicle.position[2]-othervehicle.position[2]))/\
-                       (4*np.pi*((vehicle.position[0]-othervehicle.position[0])**2+(vehicle.position[1]-othervehicle.position[1])**2+(vehicle.position[2]-othervehicle.position[2])**2)**(3/2))
-
+      W_source += (othervehicle.source_strength*(vehicle.position[2]-othervehicle.position[2]))/\
+        (4*np.pi*((vehicle.position[0]-othervehicle.position[0])**2+(vehicle.position[1]-othervehicle.position[1])**2+(vehicle.position[2]-othervehicle.position[2])**2)**(3/2))
 
     # Total velocity induced :
-    V_sum[f,0] = V_sink[f,0] + V_source[f,0]
-    V_sum[f,1] = V_sink[f,1] + V_source[f,1]
+    V_sum = V_sink + V_source
 
-    # L2 norm of flow velocity:
-    V_norm[f] = (V_sum[f,0]**2 + V_sum[f,1]**2)**0.5
-    # Normalized flow velocity:
-    V_normal[f,0] = V_sum[f,0]/V_norm[f]
-    V_normal[f,1] = V_sum[f,1]/V_norm[f]
+    V_norm2 = (V_sum[f,0]**2 + V_sum[f,1]**2)
 
     # Flow velocity inversely proportional to velocity magnitude:
-#    V_flow[f,0] = V_normal[f,0]/V_norm[f]
-#    V_flow[f,1] = V_normal[f,1]/V_norm[f]
-    V_flow[f,0] = V_normal[f,0]/(1.2*V_norm[f])
-    V_flow[f,1] = V_normal[f,1]/(1.2*V_norm[f])
+    V_flow = V_sum/(V_coef*V_norm2)
 
-    W_sum[f] = W_sink[f] + W_source[f]
+    W_sum = W_sink + W_source
+    W_flow[f] = 0.0 if ((abs(vehicle.velocity[0])+abs(vehicle.velocity[1]))<0.2) else (W_sum/W_coef)  # apply vertical correction, when moving horizontal 
 
+    print(str(W_flow[f]))
 
-# TODO Improve dumping when stopped on target
-    H_spd = 4.0*(abs(vehicle.velocity[0])+abs(vehicle.velocity[1])) # increase correction when moving (even if it is already in W_sink)
-    W_flow[f] = H_spd*W_sum[f]
+    W_flow[f] = np.clip(W_flow[f],0.0, H_max) if W_flow[f] > 0 else np.clip(W_flow[f],-H_max, 0.0) 
 
-#    W_flow[f] = np.clip(W_sum[f],0.0, H_max) if W_sum[f] > 0 else np.clip(W_sum[f],-H_max, 0.0)  # needed when flying more than 2 tellos
-#    W_flow[f] = vehicle.goal[2] - vehicle.position[2]   # can be used to be more reactive with one single tello
-       
-    flow_vels[f,:] = [V_flow[f,0],V_flow[f,1],W_flow[f,0]]
+    flow_vels[f,:] = [V_flow[f,0],V_flow[f,1],W_flow[f]]
 
   return flow_vels
 
@@ -121,12 +114,12 @@ class Thread_mission(threading.Thread):
     while (self.suspend): time.sleep(self.telloPeriod)
 
     self.send_command(0,'command')
-    self.send_command(0,'streamon')
-    time.sleep(1)
+#    self.send_command(0,'streamon')
+#    time.sleep(1)
     self.send_command(0,'takeoff')
+    time.sleep(8)
+    self.send_command(0,'up 150')
     time.sleep(7)
-#    self.send_command(0,'up 100')
-#    time.sleep(7)
 
     self.guidanceLoop() # drone should be flying to have position from optitrack
     self.send_command(0,'land')

@@ -82,10 +82,11 @@ class Thread_commandSim(threading.Thread):
                 step[1] = r*np.sin(theta)
 #                pos = self.mobiles[elt][1].position
 #                step[2] = pos[2] 
-                step[2] = 1.5+np.sin(theta)
+                step[2] = 3.0+np.cos(theta + (np.pi / 2.0))
 
                 self.mobiles[elt][1].position = step
                 targetpos = step
+
               else:
                 targetpos = self.mobiles[elt][1].position
            
