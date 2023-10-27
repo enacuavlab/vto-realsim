@@ -77,9 +77,9 @@ def compute_flow(vehicles):
     V_flow = V_sum/(V_coef*V_norm2)
 
     W_sum = W_sink + W_source
-    W_flow[f] = 0.0 if ((abs(vehicle.velocity[0])+abs(vehicle.velocity[1]))<0.2) else (W_sum/W_coef)  # apply vertical correction, when moving horizontal 
+    W_flow[f] = -0.5 if ((abs(vehicle.velocity[0])+abs(vehicle.velocity[1]))<0.3) else (W_sum/W_coef)  # apply vertical correction, when moving horizontal else go down
 
-    print(str(W_flow[f]))
+    print(str(vehicle.ID)+" "+str(W_flow[f]))
 
     W_flow[f] = np.clip(W_flow[f],0.0, H_max) if W_flow[f] > 0 else np.clip(W_flow[f],-H_max, 0.0) 
 
