@@ -2,8 +2,10 @@
 
 import subprocess
 
-tellos_routeur = {61:'TELLO-ED433E',62:'TELLO-ED4317',63:'TELLO-99CEA1',64:'TELLO-ED4381',65:'TELLO-F0B594',66:'TELLO-99CE21',67:'TELLO-99CE5A',68:'TELLO-99CE4E'}
-tellos_docker = {60:'TELLO-ED4310'}
+tellos_routeur = {60:'TELLO-99120E',61:'TELLO-ED433E',62:'TELLO-ED4317',63:'TELLO-99CEA1',64:'TELLO-ED4381',65:'TELLO-F0B594',66:'TELLO-99CE21',67:'TELLO-99CE5A',68:'TELLO-99CE4E',69:'TELLO-99131A'}
+
+#tellos_routeur = {61:'TELLO-ED433E',62:'TELLO-ED4317',63:'TELLO-99CEA1',64:'TELLO-ED4381',65:'TELLO-F0B594',66:'TELLO-99CE21',67:'TELLO-99CE5A',68:'TELLO-99CE4E'}
+#tellos_docker = {60:'TELLO-ED4310'}
 
 #------------------------------------------------------------------------------
 def initNetDrone(selected):
