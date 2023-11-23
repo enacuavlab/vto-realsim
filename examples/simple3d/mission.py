@@ -40,7 +40,7 @@ def compute_flow(vehicles):
   W_sink     = 0
   W_source   = 0
   W_sum      = 0
-  W_flow    = np.zeros([len(vehicles),1]) # Vertical velocity component (to be used in 3-D scenarios)
+  W_flow    = np.zeros([len(vehicles)]) # Vertical velocity component (to be used in 3-D scenarios)
 
   for f,vehicle in enumerate(vehicles):
 
