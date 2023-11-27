@@ -6,8 +6,8 @@ sys.path.append("/home/pprz/Projects/vto-realsim/natnet-utilities")
 from natnet4 import Rigidbody,Thread_natnet
 
 acId = 888   # Rigid body tracked id
-optiFreq = 20 # Check that optitrack stream at least with this value
-printFreq = 1
+optiFreq = 120 # [100, 120, 180, 240, 360] Check that optitrack stream at least with this value to avoid duplicate captures
+printFreq =1 
 
 #------------------------------------------------------------------------------
 class Thread_print(threading.Thread):
@@ -19,11 +19,14 @@ class Thread_print(threading.Thread):
     self.suspend = False
 
   def run(self):
+    starttime = time.time()  
     try:
       while not self.quitflag and not (self.suspend):
         curr = self.bodies[acId]
-        print("%d %f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f"  
-          % (curr.valid,                                            # valid = 1, unvalid = 0
+        stamp = time.time()-starttime
+        print("%.3f %d %f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f"  
+          % (stamp,
+             curr.valid,                                            # valid = 1, unvalid = 0
              curr.heading,                                          # rad [0 .. 2pi[ ]-2PI .. O]
              curr.position[0],curr.position[1],curr.position[2],    # meters X[-5.000,+5.000] Y[-5.000,+5.000] Z[0,+10.000]
              curr.velocity[0],curr.velocity[1],curr.velocity[2],    # meter/sec VX[-5.000,5.000] VY[-5.000,5.000] VZ[-5,5]
@@ -43,7 +46,7 @@ def main(bodies):
   flag = Flag()
   if len(bodies):
     try:
-      threadMotion = Thread_natnet(flag,bodies,optiFreq)
+      threadMotion = Thread_natnet(flag,bodies,freq=optiFreq,vel_samples=1)
       threadMotion.start()
       threadPrint = Thread_print(flag,bodies,printFreq)
       threadPrint.start()
