@@ -162,7 +162,7 @@ class Thread_natnet(threading.Thread):
                     vel[2] /= nb
                 dcm_0_0 = 1.0 - 2.0 * (quat[1] * quat[1] + quat[2] * quat[2])
                 dcm_1_0 = 2.0 * (quat[0] * quat[1] - quat[3] * quat[2])
-                self.rigidBodyDict[ac_id].quaternion=quat
+                self.rigidBodyDict[ac_id].quat=quat
                 self.rigidBodyDict[ac_id].heading=np.arctan2(dcm_1_0, dcm_0_0)
                 self.rigidBodyDict[ac_id].position=np.array([pos[0],pos[1],pos[2]])
                 self.rigidBodyDict[ac_id].velocity=np.array([vel[0],vel[1],vel[2]])
