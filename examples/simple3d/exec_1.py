@@ -1,14 +1,15 @@
 #!/usr/bin/python3
+import sys
+sys.path.append("/home/pprz/Projects/vto-natnet/common")
+from natnet41 import Rigidbody,Thread_natnet
+import threading
 
-import threading,queue,time,argparse
+import queue,time,argparse
 import numpy as np
 
-import sys
-sys.path.append("/home/pprz/Projects/vto-realsim/natnet-utilities")
 sys.path.append("/home/pprz/Projects/vto-realsim/tellos-utilities")
 sys.path.append("/home/pprz/Projects/vto-realsim/gtkopengl-utilities")
 
-from natnet4 import Rigidbody,Thread_natnet
 from mission import Thread_mission
 from simulation import Thread_commandSim, Simbody
 from netdrone import initNetDrone
