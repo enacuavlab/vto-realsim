@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import sys
 sys.path.append("/home/pprz/Projects/vto-natnet/common")
-from natnet41 import Rigidbody,Thread_natnet
+from natnet41 import Rigidbody,Natnet
 import threading
 
 import queue,time,argparse
@@ -56,13 +56,9 @@ def main(bodies,mobiles):
   flag = Flag()
 
   if len(bodies):
-    try:
-      threadMotion = Thread_natnet(flag,bodies,optiFreq)
-      threadMotion.start()
-    except ValueError as msg:
-      print(msg)
-      exit()
-
+    motion = Natnet(bodies,optiFreq)
+    if not motion.running():
+      exit(-1)
 
   if (len(bodies)<len(mobiles)):
     threadCmdSim = Thread_commandSim(flag,mobiles)
@@ -80,13 +76,16 @@ def main(bodies,mobiles):
 
   except KeyboardInterrupt:
     print("KeyboardInterrupt")
+    motion.stop()
     flag.set()
 
   finally:
     print("finally")
     flag.set()
     if (len(bodies)<len(mobiles)): threadCmdSim.join()
-    if (len(mobiles)>1): threadMission.join()
+    if (len(mobiles)>1): 
+      motion.stop()
+      threadMission.join()
 
 
 #------------------------------------------------------------------------------
